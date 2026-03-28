@@ -1,24 +1,31 @@
-# Private config (contains real IDs, tokens, webhooks)
+# Private overrides (real IDs, secrets, test accounts)
 .private/
 
-# Credentials and secrets
+# Credentials and tokens
 .credentials.json
 mcp.json
-*.local.json
+mcp_settings.json
+settings.local.json
+settings.json.oss
 
-# Session and project data
+# Claude Code internal state
 projects/
 plugins/
 plans/
 backups/
+cache/
+debug/
+downloads/
 file-history/
 paste-cache/
 shell-snapshots/
 session-env/
+sessions/
 tasks/
+telemetry/
 worktrees/
-
-# Lock files
+ide/
+history.jsonl
 *.lock
 
 # OS files

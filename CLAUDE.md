@@ -1,5 +1,7 @@
 # Global Development Rules
 
+**IMPORTANT: Read `.claude/.private/overrides.md` first — it maps all YOUR_* placeholders in these rules to real project values. Read `.claude/.private/reference-ids.md` for all real IDs.**
+
 Project-level CLAUDE.md takes precedence on conflicts.
 
 ## Git Workflow
