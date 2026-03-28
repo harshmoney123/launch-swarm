@@ -445,14 +445,15 @@ Every agent has strict boundaries. This is intentional and critical:
 ### Quick Start (5 minutes)
 
 ```bash
-# 1. Clone the repo
+# Option A: Clone directly as your ~/.claude folder (recommended)
+git clone https://github.com/harshmoney123/launch-swarm.git ~/.claude
+
+# Option B: Clone somewhere and copy the files
 git clone https://github.com/harshmoney123/launch-swarm.git
+cp -r launch-swarm/{CLAUDE.md,rules,settings.json} ~/.claude/
 
-# 2. Copy .claude/ to your home directory (global config)
-cp -r launch-swarm/.claude/ ~/.claude/
-
-# Or copy to a specific project (project-level config)
-cp -r launch-swarm/.claude/ /path/to/your/project/.claude/
+# Option C: Clone into a specific project's .claude
+git clone https://github.com/harshmoney123/launch-swarm.git /path/to/your/project/.claude
 ```
 
 ### Configure Your IDs
