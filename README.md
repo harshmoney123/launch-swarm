@@ -117,13 +117,15 @@ The PR Watchdog only auto-merges after **both** gates approve. This catches an e
 
 ### 1. Sprint Worker
 
-> **Role:** The coder. Pulls tasks from your sprint board, writes failing tests first, implements the fix, and opens a PR.
+> **Role:** The coder. Pulls tasks from your sprint board, writes failing tests first, implements the fix, and opens a PR. Trigger: `sprint worker` or `go ham`.
+
+**Runs up to 3 concurrent instances** — you can parallelize across multiple tasks.
 
 **What it does every 30 minutes:**
 1. Queries your sprint board for `To-do` tasks in the current sprint
 2. Skips tasks owned by others or marked as blocked
 3. Classifies risk level (Low / Medium / High)
-4. Writes failing tests, then implements until tests pass
+4. Writes failing tests (minimum 3 failing + 1 passing), then implements until all pass
 5. Opens a PR targeting your dev branch using the [Reviewer-First format](#pr-templates)
 6. Moves the task to `In Review` and picks up the next one
 
@@ -235,13 +237,25 @@ An `Approve` verdict triggers Gate 1 — the Docs Agent is next in line.
 > **Role:** The merge bot and janitor. Fixes review comments, syncs branches, resolves conflicts, and auto-merges after both gates pass.
 
 **What it does every 10 minutes:**
+
+*Core loop:*
 1. **Syncs your dev branch** with `main` to prevent drift
 2. **Resolves merge conflicts** — checks out in a worktree, merges, runs tests, pushes
 3. **Fixes CI failures** — diagnoses and pushes a fix
 4. **Fixes review comments** — reads unresolved Bug and Nit comments, makes minimal fixes, runs tests, commits, and replies "Fixed"
 5. **Auto-merges** when both gates pass (Senior Reviewer `Approve` + Docs `Documented` + CI green + no unresolved bugs)
-6. **Updates your task tracker** — marks tasks as Done when their PR merges
-7. **Prunes worktrees** for merged branches to prevent disk bloat
+6. **Redeploys test env** after each merge — rsync repos, sync containers, verify freshness
+
+*Mega PR ops:*
+7. **Handles CTO feedback** on mega PRs — investigates comments, branches from dev, fixes, opens PRs, replies with fix links
+8. **Triggers Feature Launch** when a mega PR merges to `main` (fires the Docs Agent's announcement flow)
+9. **Auto-closes tasks** on mega PR merge — parses sub-PR table, finds linked tasks, marks Done
+10. **Flags mega PR health** — warns if dev branch has >20 commits or >7 days since last merge to `main`
+
+*Housekeeping:*
+11. **Cross-repo PR linking** — matches PRs across backend and frontend repos, comments links
+12. **Prunes worktrees** for merged branches to prevent disk bloat
+13. **Flags stale PRs** older than 7 days
 
 **What it does NOT do:**
 - Never merges PRs targeting `main` — only your dev branch. The mega PR to `main` requires human approval.
@@ -256,7 +270,7 @@ An `Approve` verdict triggers Gate 1 — the Docs Agent is next in line.
 
 ### 5. Docs Agent
 
-> **Role:** The documentarian and second quality gate. Takes before/after screenshots, annotates them with red arrows, generates blog drafts, and blocks merges if the UI is broken.
+> **Role:** The documentarian and second quality gate. Takes before/after screenshots, annotates them with red arrows, generates blog drafts, and blocks merges if the UI is broken. Trigger: `docs` or `document prs` or `ship it`.
 
 **What it does every 20 minutes:**
 1. Finds PRs that have Senior Reviewer approval but no Docs approval yet
@@ -336,6 +350,20 @@ Tests verify code works. Reviews verify code is correct. But neither verifies th
 - Never runs browser tests — this is server-side only
 
 **Standalone use:** Perfect as a "test buddy" during manual testing sessions. Run it with `/loop 1m` while you're testing your app and get instant feedback on server errors you might miss.
+
+---
+
+### Support Infrastructure (3 additional loops)
+
+Beyond the 6 primary agents, three support loops run in the background:
+
+| Loop | Interval | What it does |
+|------|----------|-------------|
+| **Notion Sync** | 5m | Bidirectional glue between GitHub and your task tracker. Open PRs → tasks "In Review". Merged PRs → tasks "Done". Flags stale "In Progress" tasks with no recent commits. Dedup sweep every 5th tick. |
+| **Rules Hygiene** | 12h | Checks Claude Code version and changelog, reviews rules for staleness against the [Prompt Health](#prompt-health-self-learning-anti-rot) tags, proposes updates. |
+| **Swarm Digest** | Daily (8am) | Morning briefing: what shipped, mega PR readiness, high-risk items, today's priorities. Delivered to your digest channel. |
+
+These aren't agents with standalone use cases — they're infrastructure that keeps the swarm healthy. The Notion Sync is especially critical; without it, your task tracker and GitHub drift apart within hours.
 
 ---
 
@@ -762,6 +790,18 @@ Every PR opened by the Sprint Worker follows this format:
 - Everything: `git revert -m 1 <mega-merge>` on main
 ```
 
+### Multi-Account Test Matrix
+
+Every PR should be tested from multiple perspectives:
+
+| Feature type | Test WITH (should work) | Test WITHOUT (should be denied) |
+|-------------|------------------------|--------------------------------|
+| Admin-only | Admin account | Basic user → verify 403 |
+| Tier-gated | Pro/privileged user | Basic user → verify upgrade prompt |
+| All-user | Basic user (lowest tier) | N/A |
+
+This ensures you're testing both the happy path AND the access control. A feature that "works" but is visible to users who shouldn't see it is a security bug.
+
 ---
 
 ## Customization Guide
@@ -852,10 +892,29 @@ A: Prefix any task with "Investigate:" and the Sprint Worker switches to researc
 
 ## Priority System
 
-When multiple tasks are available, agents pick work using a two-dimensional priority matrix based on risk and priority:
+There are **two different orderings** for two different purposes:
+
+### Sprint Curation Order ("prep sprint")
+
+When deciding **what to work on**, prioritize by business value with least friction:
 
 ```
-High Risk + Low Priority  →  first  (high risk = review early)
+High Priority + Low Risk   →  first  (ship value fast, low blast radius)
+High Priority + Med Risk   →  second
+Med Priority  + Low Risk   →  third
+High Priority + High Risk  →  fourth
+Med Priority  + Med Risk   →  fifth
+...
+```
+
+You want to deliver the most impactful stuff with the least chance of blowing up first.
+
+### Execution/Review Triage Order (Sprint Worker, Senior Reviewer)
+
+When deciding **what to review or merge next** from the active queue, prioritize by risk:
+
+```
+High Risk + Low Priority  →  first  (get scary stuff eyeballed early)
 High Risk + Med Priority  →  second
 Med Risk  + Low Priority  →  third
 High Risk + High Priority →  fourth
@@ -866,7 +925,7 @@ Low Risk  + Med Priority  →  eighth
 Low Risk  + High Priority →  ninth
 ```
 
-**Why high-risk tasks go first regardless of priority:** High-risk changes are the ones most likely to cause problems. Getting them reviewed early gives you more time to catch issues. A low-priority but high-risk change (like a database migration) deserves more scrutiny than a high-priority but low-risk change (like a copy update).
+**Why risk-first for execution:** High-risk changes are the ones most likely to cause problems. Getting them reviewed early gives you more time to catch issues before they compound. A low-priority database migration deserves more scrutiny than a high-priority copy update.
 
 Tiebreaker: CI green first, fewer unresolved review comments first.
 
@@ -891,6 +950,8 @@ The complete lifecycle from planning to production:
 ```
 
 **The swarm knows when to stop.** When all Current Sprint tasks are done, the Sprint Worker goes idle. The system detects this and automatically generates a structured QA handoff with step-by-step test plans for every task that shipped. It doesn't keep grinding or pull from the backlog.
+
+**Between sessions:** Clear Done tasks from Current Sprint before curating new ones. This prevents the sprint view from accumulating stale completed items that confuse the agents.
 
 ---
 
