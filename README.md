@@ -2,11 +2,11 @@
 
 **Everyone else open-sourced their `.claude` file. I open-sourced my engineering team.**
 
-This is the exact `.claude` configuration I use daily to run a 6-agent AI engineering swarm from [Claude Code](https://claude.ai/code). It plans sprints, writes code, reviews PRs, generates documentation with annotated screenshots, auto-merges after dual-gate approval, and hands off to manual QA — autonomously.
+This is the exact `.claude` configuration I use daily to run a 6-agent AI engineering swarm from [Claude Code](https://claude.ai/code). It plans sprints, writes code, reviews PRs, generates documentation with annotated screenshots, auto-merges after dual-gate approval, and hands off to manual QA. Fully autonomous.
 
-I'm the CEO of [AgentWeb](https://www.agentweb.pro), a 4-person team building AI marketing agents. I'm a YC founder (W23) who still codes part-time — the rest of my day is sales, marketing, and ops. This system is how I stay dangerous as a part-time engineer. It's not a weekend experiment. It's the production workflow behind a real startup.
+I'm the CEO of [AgentWeb](https://www.agentweb.pro), a 4-person team building AI marketing agents. I'm a YC founder (W23) who still codes part-time. The rest of my day is sales, marketing, and ops. This system is how I stay dangerous as a part-time engineer. This is the production workflow behind a real startup shipping real code every week.
 
-**The core insight:** AI agents fail for the same reason human teams fail — no org design. Prompts rot. Agents step on each other. Nobody owns quality. This system treats AI agents like a real engineering team: defined roles, strict boundaries, accountability gates, and self-healing instructions.
+**The core insight:** AI agents fail for the same reason human teams fail. No org design. Prompts rot. Agents step on each other. Nobody owns quality. This system treats AI agents like a real engineering team: defined roles, strict boundaries, accountability gates, and self-healing instructions.
 
 ---
 
@@ -119,7 +119,7 @@ The PR Watchdog only auto-merges after **both** gates approve. This catches an e
 
 > **Role:** The coder. Pulls tasks from your sprint board, writes failing tests first, implements the fix, and opens a PR. Trigger: `sprint worker` or `go ham`.
 
-**Runs up to 3 concurrent instances** — you can parallelize across multiple tasks.
+**Runs up to 3 concurrent instances.** You can parallelize across multiple tasks.
 
 **What it does every 30 minutes:**
 1. Queries your sprint board for `To-do` tasks in the current sprint
@@ -172,7 +172,7 @@ Tasks prefixed with `Investigate:` trigger research-only mode. The agent reads c
 - Never works on Epics (13+ story points) — flags them for breakdown instead
 
 **Why separating planning from coding matters:**
-When the same agent plans and codes, it tends to commit to the first approach it thinks of. By separating these roles, the Planner can objectively evaluate multiple options without the sunk-cost bias of already having written code. The Sprint Worker then follows a vetted plan instead of improvising.
+When the same agent plans and codes, it locks onto the first approach it thinks of. Split the roles and the Planner actually considers multiple options. It hasn't written any code yet, so there's nothing to defend. The Sprint Worker then follows a vetted plan instead of improvising.
 
 **Plan format:**
 ```markdown
@@ -226,9 +226,9 @@ Backend PR: [yes/no] | Blocked by: [list]
 
 **Verdict options:** `Approve` / `Needs changes` / `Rethink approach`
 
-An `Approve` verdict triggers Gate 1 — the Docs Agent is next in line.
+An `Approve` verdict triggers Gate 1. The Docs Agent is next in line.
 
-**Standalone use:** The highest-value standalone agent. Just install the Senior Reviewer + PR templates for dramatically better code review without the full swarm.
+**Standalone use:** The highest-value standalone agent. Just install the Senior Reviewer + PR templates and your code review quality goes way up, no full swarm needed.
 
 ---
 
@@ -319,7 +319,7 @@ await page.screenshot({ path: 'after-annotated.png' });
 ```
 
 **Why docs as a merge gate?**
-Tests verify code works. Reviews verify code is correct. But neither verifies that the feature is **documented, visible, and makes sense to stakeholders**. By making documentation a hard gate, you catch: undocumented features, UI regressions that "pass" tests but look wrong, and missing context for anyone who wasn't in the PR discussion.
+Tests tell you the code works. Reviews tell you the code is correct. Neither one tells you the feature is **documented, visible, and makes sense to stakeholders**. Make documentation a hard gate and you start catching: undocumented features, UI regressions that "pass" tests but look wrong, and missing context for anyone who wasn't in the PR discussion.
 
 **Standalone use:** Very useful on its own for any team that wants automated screenshot documentation on PRs. Install the Docs Agent + Playwright MCP for instant visual PR reviews.
 
@@ -363,7 +363,7 @@ Beyond the 6 primary agents, three support loops run in the background:
 | **Rules Hygiene** | 12h | Checks Claude Code version and changelog, reviews rules for staleness against the [Prompt Health](#prompt-health-self-learning-anti-rot) tags, proposes updates. |
 | **Swarm Digest** | Daily (8am) | Morning briefing: what shipped, mega PR readiness, high-risk items, today's priorities. Delivered to your digest channel. |
 
-These aren't agents with standalone use cases — they're infrastructure that keeps the swarm healthy. The Notion Sync is especially critical; without it, your task tracker and GitHub drift apart within hours.
+These aren't agents with standalone use cases. They're infrastructure that keeps the swarm healthy. The Notion Sync is especially critical. Without it, your task tracker and GitHub drift apart within hours.
 
 ---
 
@@ -373,16 +373,16 @@ These aren't agents with standalone use cases — they're infrastructure that ke
 
 Most teams gate merges on tests and code review. This system adds a second gate: documentation.
 
-**Why?** Because in practice, the problems that slip through code review aren't logic bugs — they're:
+**Why?** Because in practice, the problems that slip through code review aren't logic bugs. They're:
 - Features that work but nobody documented
 - UI changes that "pass" tests but visually regressed
 - PRs that three people reviewed but nobody screenshotted
 
-The dual-gate pattern catches these by requiring independent verification from two agents with different perspectives: one reads code, one looks at the UI.
+The dual-gate pattern catches these. Two agents verify independently from different angles: one reads code, one looks at the UI.
 
 ### Prompt Health (Self-Learning Anti-Rot)
 
-AI instructions degrade over time. Rules become outdated, edge cases accumulate, contradictions creep in. Most people don't notice until their agent starts behaving erratically.
+AI instructions degrade over time. Rules go stale, edge cases pile up, and contradictions sneak in. Most people don't notice until their agent starts acting weird.
 
 This system includes a built-in health system:
 
@@ -461,10 +461,10 @@ Every agent has strict boundaries. This is intentional and critical:
 | Log Watcher | Reports errors | Fix code, create tasks |
 
 **Why this works better than a "do everything" agent:**
-- No conflicts — agents don't step on each other's work
-- Clear accountability — when something goes wrong, you know which agent's rules to fix
-- Composable — you can run any subset of agents independently
-- Debuggable — each agent's behavior is defined in one file
+- No conflicts. Agents don't step on each other's work.
+- Clear accountability. When something goes wrong, you know which agent's rules to fix.
+- Composable. You can run any subset of agents independently.
+- Debuggable. Each agent's behavior is defined in one file.
 
 ---
 
@@ -534,7 +534,7 @@ If your task tracker is connected, Claude will query your sprint board and propo
 
 ## What You Need
 
-The swarm requires a few infrastructure pieces to function. **The specific tools don't matter — the concepts do.** This section explains what each piece does and why it's needed, with examples of tools that work.
+The swarm requires a few infrastructure pieces. **The specific tools don't matter. The concepts do.** This section explains what each piece does and why it's needed, with examples of tools that work.
 
 ### 1. A Sprint Board / Task Tracker
 
@@ -596,7 +596,7 @@ To swap: Update channel IDs in `reference-ids.md` and webhook URLs in `loop-docs
 **Options:**
 | Tool | Notes |
 |------|-------|
-| **[Emma](https://www.agentweb.pro)** (what I use) | AgentWeb's AI marketing agent — takes screenshots + context, outputs blog drafts and user guides. Full disclosure: I built this. |
+| **[Emma](https://www.agentweb.pro)** (what I use) | AgentWeb's AI marketing agent. Takes screenshots + context, outputs blog drafts and user guides. Full disclosure: I built this. |
 | **Any LLM API** | Send screenshots + PR context to Claude/GPT and get a draft back |
 | **Manual** | Skip the auto-draft, just require screenshots as the gate |
 
@@ -611,7 +611,7 @@ To swap: Update the content tool references in `auto-user-guide.md` and `loop-do
 # Add to your .claude/settings.json or install via Claude Code plugin marketplace
 ```
 
-This is the one dependency that's hard to swap — the screenshot annotation technique is Playwright-specific. If you're not using the Docs Agent, you don't need this.
+This is the one dependency that's hard to swap. The screenshot annotation technique is Playwright-specific. If you're not using the Docs Agent, you don't need this.
 
 ### 6. GitHub CLI (`gh`)
 
@@ -700,11 +700,11 @@ These are natural language triggers you type into Claude Code to orchestrate the
 
 ### `work horses`
 
-Starts Sprint Worker + PR Watchdog. The execution pair — for when you want code written and merged without the overhead of the full pipeline.
+Starts Sprint Worker + PR Watchdog. The execution pair. Use this when you want code written and merged without the overhead of the full pipeline.
 
 ### `senior leadership`
 
-Starts Task Planner + Senior Reviewer. The quality pair — for when you want every task planned and every PR deeply reviewed, but you're writing the code yourself.
+Starts Task Planner + Senior Reviewer. The quality pair. Use this when you want every task planned and every PR deeply reviewed, but you're writing the code yourself.
 
 ### `prep mega pr`
 
@@ -757,7 +757,7 @@ Every PR opened by the Sprint Worker follows this format:
 
 - **Risk/Priority:** Tells the reviewer where to focus attention. High-risk PRs get reviewed first.
 - **Before/After:** Forces the author to articulate the problem and solution in plain language. If you can't explain it in 2 sentences, the PR is too big.
-- **Test Evidence:** Proves tests actually ran. Not just "tests pass" but which tests and how many.
+- **Test Evidence:** Proves tests actually ran. "Tests pass" means nothing. Which tests? How many?
 - **What was NOT tested:** This is the most important field. Every PR has blind spots. Making them explicit means the reviewer knows exactly where to look harder, and the QA plan can cover the gaps. Honesty here prevents production surprises.
 - **Related PRs:** Cross-repo changes (e.g., backend + frontend) need to ship together. This links them.
 - **Task link:** Bidirectional linking between code and task tracker. Anyone on the task can find the PR; anyone on the PR can find the task.
@@ -880,7 +880,7 @@ A: Multiple layers of protection:
 - High-risk PRs are held for manual review regardless of gates
 
 **Q: Can I run this with a team, not just solo?**
-A: Yes — I run it on a 4-person team. The owner filter (agents only touch tasks assigned to you) prevents conflicts. Each team member can run their own swarm instance on their own tasks. The PR Watchdog handles cross-agent coordination (merge conflicts, branch syncing).
+A: Yes. I run it on a 4-person team. The owner filter (agents only touch tasks assigned to you) prevents conflicts. Each team member can run their own swarm instance on their own tasks. The PR Watchdog handles cross-agent coordination (merge conflicts, branch syncing).
 
 **Q: My prompts keep going stale. How does prompt health actually work?**
 A: See [Prompt Health](#prompt-health-self-learning-anti-rot). The short version: every rule gets tagged ACTIVE/DORMANT/STALE. After any mistake, you check whether a rule should have prevented it and fix or add one. The Rules Hygiene agent reviews all rules every 12 hours and flags drift. This turns prompt maintenance from "maybe I'll update it someday" into a systematic process.
@@ -999,11 +999,11 @@ This is a living system. I update it as I find better patterns.
 
 ## Credits
 
-Built by [Harsha Vankayalapati](https://www.linkedin.com/in/harsha-vankayalapati/) — Co-Founder & CEO at [AgentWeb](https://www.agentweb.pro). YC W23 founder. Part-time coder, full-time CEO.
+Built by [Harsha Vankayalapati](https://www.linkedin.com/in/harsha-vankayalapati/), Co-Founder & CEO at [AgentWeb](https://www.agentweb.pro). YC W23 founder. Part-time coder, full-time CEO.
 
 This system was built because I needed to stay dangerous as an engineer while running sales, marketing, and ops for a 4-person startup. Every rule exists because something broke without it. Every boundary exists because an agent overstepped without it.
 
-The Docs Agent in this system uses [Emma](https://www.agentweb.pro) (AgentWeb's AI marketing agent) for automated blog drafts and user guide generation. If you're looking for an AI-powered content pipeline that integrates with your development workflow, check it out.
+The Docs Agent in this system uses [Emma](https://www.agentweb.pro) (AgentWeb's AI marketing agent) for automated blog drafts and user guide generation. We built it. Obviously I'm biased, but it works well for dev teams that want content without context-switching.
 
 ---
 
