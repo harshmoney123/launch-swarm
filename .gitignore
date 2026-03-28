@@ -1,0 +1,25 @@
+# Private config (contains real IDs, tokens, webhooks)
+.private/
+
+# Credentials and secrets
+.credentials.json
+mcp.json
+*.local.json
+
+# Session and project data
+projects/
+plugins/
+plans/
+backups/
+file-history/
+paste-cache/
+shell-snapshots/
+session-env/
+tasks/
+worktrees/
+
+# Lock files
+*.lock
+
+# OS files
+.DS_Store
