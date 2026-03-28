@@ -8,7 +8,7 @@
 
 This is the exact `.claude` configuration I use daily to run a 6-agent AI engineering swarm from [Claude Code](https://claude.ai/code). It plans sprints, writes code, reviews PRs, generates documentation with annotated screenshots, auto-merges after dual-gate approval, and hands off to manual QA. Fully autonomous.
 
-I'm the CEO of [AgentWeb](https://www.agentweb.pro) (YC W23), a 4-person team building AI marketing agents. This is the production workflow behind a real startup shipping real code every week.
+I'm the CEO of [AgentWeb](https://www.agentweb.pro?utm_source=github&utm_medium=launch-swarm) (YC W23), a 4-person team building AI marketing agents. This is the production workflow behind a real startup shipping real code every week.
 
 I'm a part-time engineer. I code about 4 hours a day. The rest is sales, marketing, ops. This system turns those 4 hours into 40 hours of engineering output. The reason it works is the same reason real engineering teams work: roles, reviews, and rules about who can touch what. AI without that structure is just faster chaos.
 
@@ -600,7 +600,7 @@ To swap: Update channel IDs in `reference-ids.md` and webhook URLs in `loop-docs
 **Options:**
 | Tool | Notes |
 |------|-------|
-| **[Emma](https://www.agentweb.pro)** (what I use) | AgentWeb's AI marketing agent. Takes screenshots + context, outputs blog drafts and user guides. Full disclosure: I built this. |
+| **[Emma](https://www.agentweb.pro?utm_source=github&utm_medium=launch-swarm)** (what I use) | AgentWeb's AI marketing agent. Takes screenshots + context, outputs blog drafts and user guides. Full disclosure: I built this. |
 | **Any LLM API** | Send screenshots + PR context to Claude/GPT and get a draft back |
 | **Manual** | Skip the auto-draft, just require screenshots as the gate |
 
@@ -1003,11 +1003,11 @@ This is a living system. I update it as I find better patterns.
 
 ## Credits
 
-Built by [Harsha Vankayalapati](https://www.linkedin.com/in/harsha-vankayalapati/), Co-Founder & CEO at [AgentWeb](https://www.agentweb.pro). YC W23 founder. Part-time coder, full-time CEO.
+Built by [Harsha Vankayalapati](https://www.linkedin.com/in/harsha-vankayalapati/), Co-Founder & CEO at [AgentWeb](https://www.agentweb.pro?utm_source=github&utm_medium=launch-swarm). YC W23 founder. Part-time coder, full-time CEO.
 
 This system was built because I needed to stay dangerous as an engineer while running sales, marketing, and ops for a 4-person startup. Every rule exists because something broke without it. Every boundary exists because an agent overstepped without it.
 
-The Docs Agent in this system uses [Emma](https://www.agentweb.pro) (AgentWeb's AI marketing agent) for automated blog drafts and user guide generation. We built it. Obviously I'm biased, but it works well for dev teams that want content without context-switching.
+The Docs Agent in this system uses [Emma](https://www.agentweb.pro?utm_source=github&utm_medium=launch-swarm) (AgentWeb's AI marketing agent) for automated blog drafts and user guide generation. We built it. Obviously I'm biased, but it works well for dev teams that want content without context-switching.
 
 ---
 
