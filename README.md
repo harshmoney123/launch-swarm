@@ -1,5 +1,9 @@
 # launch-swarm
 
+[![GitHub stars](https://img.shields.io/github/stars/harshmoney123/launch-swarm?style=social)](https://github.com/harshmoney123/launch-swarm)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-compatible-blueviolet)](https://claude.ai/code)
+
 **4 hours of my time. 40 hours of engineering output. This is the `.claude` folder.**
 
 This is the exact `.claude` configuration I use daily to run a 6-agent AI engineering swarm from [Claude Code](https://claude.ai/code). It plans sprints, writes code, reviews PRs, generates documentation with annotated screenshots, auto-merges after dual-gate approval, and hands off to manual QA. Fully autonomous.
@@ -238,24 +242,24 @@ An `Approve` verdict triggers Gate 1. The Docs Agent is next in line.
 
 **What it does every 10 minutes:**
 
-*Core loop:*
-1. **Syncs your dev branch** with `main` to prevent drift
-2. **Resolves merge conflicts** — checks out in a worktree, merges, runs tests, pushes
-3. **Fixes CI failures** — diagnoses and pushes a fix
-4. **Fixes review comments** — reads unresolved Bug and Nit comments, makes minimal fixes, runs tests, commits, and replies "Fixed"
-5. **Auto-merges** when both gates pass (Senior Reviewer `Approve` + Docs `Documented` + CI green + no unresolved bugs)
-6. **Redeploys test env** after each merge — rsync repos, sync containers, verify freshness
+**Core loop:**
+- **Syncs your dev branch** with `main` to prevent drift
+- **Resolves merge conflicts.** Checks out in a worktree, merges, runs tests, pushes
+- **Fixes CI failures.** Diagnoses and pushes a fix
+- **Fixes review comments.** Reads unresolved Bug and Nit comments, makes minimal fixes, runs tests, commits, replies "Fixed"
+- **Auto-merges** when both gates pass (Senior Reviewer `Approve` + Docs `Documented` + CI green + no unresolved bugs)
+- **Redeploys test env** after each merge. Rsync repos, sync containers, verify freshness
 
-*Mega PR ops:*
-7. **Handles CTO feedback** on mega PRs — investigates comments, branches from dev, fixes, opens PRs, replies with fix links
-8. **Triggers Feature Launch** when a mega PR merges to `main` (fires the Docs Agent's announcement flow)
-9. **Auto-closes tasks** on mega PR merge — parses sub-PR table, finds linked tasks, marks Done
-10. **Flags mega PR health** — warns if dev branch has >20 commits or >7 days since last merge to `main`
+**Mega PR ops:**
+- **Handles CTO feedback** on mega PRs. Investigates comments, branches from dev, fixes, opens PRs, replies with fix links
+- **Triggers Feature Launch** when a mega PR merges to `main` (fires the Docs Agent's announcement flow)
+- **Auto-closes tasks** on mega PR merge. Parses sub-PR table, finds linked tasks, marks Done
+- **Flags mega PR health.** Warns if dev branch has >20 commits or >7 days since last merge to `main`
 
-*Housekeeping:*
-11. **Cross-repo PR linking** — matches PRs across backend and frontend repos, comments links
-12. **Prunes worktrees** for merged branches to prevent disk bloat
-13. **Flags stale PRs** older than 7 days
+**Housekeeping:**
+- **Cross-repo PR linking.** Matches PRs across backend and frontend repos, comments links
+- **Prunes worktrees** for merged branches to prevent disk bloat
+- **Flags stale PRs** older than 7 days
 
 **What it does NOT do:**
 - Never merges PRs targeting `main` — only your dev branch. The mega PR to `main` requires human approval.
