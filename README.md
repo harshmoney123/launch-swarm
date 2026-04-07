@@ -12,6 +12,9 @@ I'm the CEO of [AgentWeb](https://www.agentweb.pro?utm_source=github&utm_medium=
 
 I'm a part-time engineer. I code about 4 hours a day. The rest is sales, marketing, ops. This system turns those 4 hours into 40 hours of engineering output. The reason it works is the same reason real engineering teams work: roles, reviews, and rules about who can touch what. AI without that structure is just faster chaos.
 
+<img width="958" height="216" alt="image" src="https://github.com/user-attachments/assets/3d8669ae-0473-4030-afc4-f7a373bf1047" />
+
+
 ---
 
 ## Table of Contents
