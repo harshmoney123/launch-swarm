@@ -8,7 +8,7 @@
 
 This is the exact `.claude` configuration I use daily to run a 6-agent AI engineering swarm from [Claude Code](https://claude.ai/code). It plans sprints, writes code, reviews PRs, generates documentation with annotated screenshots, auto-merges after dual-gate approval, and hands off to manual QA. Fully autonomous.
 
-I'm the CEO of [AgentWeb](https://www.agentweb.pro?utm_source=github&utm_medium=launch-swarm) (YC W23), a 4-person team building AI marketing agents. This is the production workflow behind a real startup shipping real code every week.
+I'm the CEO of [AgentWeb](https://www.agentweb.pro?utm_source=github&utm_medium=launch-swarm), a 4-person team building AI marketing agents. This is the production workflow behind a real startup shipping real code every week.
 
 I'm a part-time engineer. I code about 4 hours a day. The rest is sales, marketing, ops. This system turns those 4 hours into 40 hours of engineering output. The reason it works is the same reason real engineering teams work: roles, reviews, and rules about who can touch what. AI without that structure is just faster chaos.
 
