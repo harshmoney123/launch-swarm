@@ -80,8 +80,8 @@ Run `git diff YOUR_DEV_BRANCH...HEAD` and grep the additions (not removals) for 
 - Any new hardcoded AWS access key, secret key, API key, or JWT secret (regex: `AKIA[0-9A-Z]{16}`, `aws_secret_access_key\s*=`, `JWT_SECRET\s*=\s*['"]`).
 
 **Amber patterns** (one match -> `PARTIAL`, flag on PR, do not block):
-- Diff touches `src/contexts/AuthContext.tsx`, any file under `auth/`, `tokens`, `sessions`, `reset-password`, or `/api/auth/*` -> PARTIAL with note "auth surface, needs Rui review per ownership memory".
-- Diff touches Emma core, MCP server, or agent orchestration files (`emma/`, `mcp/`, `agent-engine/`) -> PARTIAL with note "agent infra, needs Rui review per ownership memory".
+- Diff touches auth surface (`src/contexts/AuthContext.tsx`, any file under `auth/`, `tokens`, `sessions`, `reset-password`, or `/api/auth/*`) -> PARTIAL with note "auth surface, needs CTO review per ownership memory".
+- Diff touches agent core, MCP server, or agent orchestration files (matching `agent/`, `emma/`, `mcp/`, or `*agent-engine*` paths for your project) -> PARTIAL with note "agent infra, needs CTO review per ownership memory".
 - New `any` type in TypeScript where context is non-trivial (> 5 occurrences in one file) -> PARTIAL with note "type safety regression".
 - Diff adds > 500 lines on net -> PARTIAL with note "large diff, break into sub-tasks per Sprint Worker rules".
 
@@ -159,7 +159,7 @@ And append one JSONL line to `~/.agentweb-swarm/swarm-log.jsonl`:
 
 If Verifier itself breaks -- worktree collision, npm registry unreachable, node version mismatch in the runner -- emit `Verification: BLOCK -- <reason>` instead of FAIL. BLOCK is treated by Watchdog the same as "verdict missing": skip auto-merge, retry next tick. Do not REQUEST_CHANGES on BLOCK -- that punishes the PR for swarm infra problems.
 
-If the same BLOCK reason hits 3+ ticks in a row on different PRs, that is a systemic issue -- escalate to Harsha via Slack (`YOUR_DIGEST_CHANNEL`) and stop firing Verifier until the infra issue is fixed.
+If the same BLOCK reason hits 3+ ticks in a row on different PRs, that is a systemic issue -- escalate via Slack (`YOUR_DIGEST_CHANNEL`) and stop firing Verifier until the infra issue is fixed.
 
 ## Dogfood plan (before gating Watchdog on Verifier)
 
