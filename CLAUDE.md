@@ -34,10 +34,14 @@ Project-level CLAUDE.md takes precedence on conflicts.
 
 | Keyword | What it does |
 |---------|-------------|
-| **"prep sprint"** | Query board -> propose 3-5 tasks by impact -> you approve -> check `Move to Current Sprint` checkbox. Never auto-set without approval. Use My Current Sprint view (`YOUR_CURRENT_SPRINT_VIEW_ID`) to check current state. |
-| **"launch swarm"** | Requires Current Sprint curated. Launches: Sprint Worker + Watchdog + Planner + Reviewer + Docs + cron jobs. All agents query My Current Sprint view. |
+| **"prep sprint"** | Query board -> propose tasks totaling **>= 20 SP** (floor, not ceiling) -> you approve -> check `Move to Current Sprint` checkbox. **MUST exclude any task tagged `Requires: Me`.** Priority order: (1) full AFK-able epics, (2) prelim tasks inside epics that can ship without you, (3) High, (4) Medium, (5) Low. Within each tier, prefer **Low Risk** first (you can ship unverified). Use My Current Sprint view (`YOUR_CURRENT_SPRINT_VIEW_ID`) to check current state. See `rules/loop-afk-vs-live.md`. |
+| **"prep session"** | Surfaces tasks tagged `Requires: Me`, grouped by session subtag (`Session: Creds` / `Taste` / `Money` / `CTO` / `Device`). Output is a batched to-do list for your next in-person work block, NOT a sprint. See `rules/loop-afk-vs-live.md`. |
+| **"launch swarm"** | Requires Current Sprint curated. Fires local `/loop` commands via the `loop` skill for Sprint Worker (30m), Watchdog (10m), Reviewer (20m), Planner (15m), Docs (20m). Each loop needs its own terminal. Cloud triggers were tried and abandoned (2026-04-05) -- they 500'd on manual run and the 1h min interval was too coarse. Local loops require laptop awake but have full access to Playwright, AWS creds, test env SSH, Payload secret. See `rules/loop-modes.md`. |
 | **"prep for deploy"** | Run tests -> open PR targeting `YOUR_DEV_BRANCH` -> report. |
-| **"prep mega pr"** | Sync `YOUR_DEV_BRANCH` <- `main` -> run tests -> verify all sub-PR gates -> open mega PR per `loop-back-testing.md` -> notify your CTO via Slack. |
+| **"prep for review"** | Opens **draft** mega PR with structured review table. You comment `fix #N: reason` or `revert #N` on the PR. See `rules/loop-review.md`. |
+| **"batch fix"** | Reads your mega PR comments, reverts `revert` items, ships fix PRs for `fix` items, updates mega PR. See `rules/loop-review.md`. |
+| **"ship clean"** | Ships what's ready NOW -- reverts all `fix` + `revert` items, marks mega PR ready. Held items go to next sprint. |
+| **"prep mega pr"** | (Legacy) Sync `YOUR_DEV_BRANCH` <- `main` -> run tests -> verify all sub-PR gates -> open mega PR per `loop-back-testing.md` -> notify your CTO via Slack. |
 
 ## Development Lifecycle
 
@@ -53,4 +57,4 @@ Done = merged to `YOUR_DEV_BRANCH`. Mega PR is a separate batch.
 
 ## Extended Rules (`.claude/rules/`)
 
-11: Session Hygiene | 12: Notion Tracking | 13: Loop Modes | 14: Auto User Guide | 15: Meeting Actions | IDs: `reference-ids.md` | Health: `prompt-health.md`
+11: Session Hygiene | 12: Notion Tracking | 13: Loop Modes | 14: Auto User Guide | 15: Meeting Actions | 16: Sprint Review (`loop-review.md`) | IDs: `reference-ids.md` | Health: `prompt-health.md`

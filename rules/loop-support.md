@@ -14,7 +14,7 @@ Senior architect -- reads code, never writes it.
 
 `To-do -> [Planner adds plan] -> To-do (planned) -> [Sprint Worker claims] -> In progress -> Done`
 
-1. Query **My Current Sprint view** (`YOUR_CURRENT_SPRINT_VIEW_ID`). Filter `Status === "To-do"`, sort by priority order. This view already filters by `Sprint = "Current Sprint"`.
+1. Query **My Current Sprint view** (`YOUR_CURRENT_SPRINT_VIEW_ID`). Filter `Status === "To-do"`, sort by priority order. This view already filters by `Sprint = "Current Sprint"`. **Skip tasks tagged `Requires: Me`** -- the planner doesn't plan those, `prep session` handles them. See `loop-afk-vs-live.md`.
 2. Sort by priority order (see `loop-modes.md`).
 3. **Owner filter (MANDATORY)**: Only plan tasks owned by you or unassigned. **Skip tasks owned by your CTO or anyone else** -- do not comment on or modify their tasks.
 4. Skip `Planned === true`. Skip Epics (13+ SP).

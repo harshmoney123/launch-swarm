@@ -4,10 +4,11 @@ Pull action items from meeting sources and route to the correct system. Runs eve
 
 ## Sources
 
-1. **Google Drive / meeting recordings** -- search knowledge base for transcripts
-2. **Granola** -- `list_meetings` -> `get_meetings` for summaries
-3. **Fireflies** -- `fireflies_get_transcripts` -> extract `action_items`
-4. **Google Calendar** -- `gcal_list_events` for meeting context (not action items directly)
+1. **Fathom** (source of truth for meeting recordings + action items) — pulled by `~/scripts/fathom-catchup-poller.sh` into `~/.claude/fathom-digest/YYYY-MM-DD.md` and `.notion-manifest`. The `/brief-fathom` companion command surfaces missed meetings and creates Notion tasks for items owned by you. Read the digest files directly; do not call Fathom API from inside commands.
+2. **Google Drive** -- search knowledge base for docs and shared meeting notes (not Fathom recordings).
+3. **Google Calendar** -- `gcal_list_events` for meeting context (not action items directly).
+
+Fireflies and Granola are no longer used (removed 2026-04-07). Do not query `fireflies_*` or Granola MCP tools even though they may still be installed.
 
 ## Routing
 

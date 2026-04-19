@@ -25,9 +25,13 @@ For each undocumented customer portal PR:
 - Comment on PR with before/after images
 
 ### Blog Draft (`feat:` PRs only)
-- Create a session with your content automation tool, send blog draft request per Rule 14 template with **annotated** S3 screenshot URLs
-- Blog screenshots should also be annotated -- readers need to see exactly where to look
-- Comment on PR + Notion task with content session link
+- **The blog writeup happens in a subagent**, not inline in the Docs loop. Spawn a `general-purpose` Agent with the PR diff + annotated S3 screenshot URLs + the Rule 14 template, have it return validated JSON, then POST. Keeps the Docs loop lean so it can handle multiple PRs per tick.
+- **Publish directly to Payload CMS** on the landing page repo, NOT Webflow, NOT via Agent session.
+- Endpoint: `POST https://www.your-product.com/api/publish-post` with `Authorization: Bearer ${PUBLISH_SECRET}` (pull from AWS Secrets Manager at `{env}/YOUR_ORG/PayloadCMS` key `PAYLOAD_PUBLISH_SECRET`).
+- Always set `"author": "harsha"` and `"status": "draft"`. You reviews at `https://www.your-product.com/admin` before publishing.
+- Build `bodyHtml` with annotated S3 screenshot URLs inline (red arrow overlays per the "Screenshot Annotations" section below).
+- Full request body format, category/author enums, failure modes, and flow: see `auto-user-guide.md`.
+- After a successful POST, comment on PR + Notion task with `https://www.your-product.com/admin/collections/posts/{id}` so you can open the draft directly.
 
 ### Approve or Block
 - All evidence captured -> **"Documented"**

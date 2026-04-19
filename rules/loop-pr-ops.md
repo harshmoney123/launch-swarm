@@ -16,10 +16,10 @@ Two jobs: (1) fix review comments, (2) auto-merge when both gates pass.
    - Checkout branch, make minimal fix, run tests, commit, push, reply "Fixed."
    - Skip informational comments. Skip fixes needing >3 files. Revert if tests fail.
 6. **Auto-merge (#2 job)**:
-   - Check: Senior Reviewer "Approve" + Docs "Documented" + CI green + no unresolved bugs.
+   - Check: Senior Reviewer "Approve" + **QA "Pass"** + CI green + no unresolved bugs.
    - All met -> `gh pr merge <num> --merge --delete-branch`. Update Notion -> "Done".
    - **After merge -> redeploy test env**: First rsync standalone repos to parent: `rsync -a --delete --exclude='node_modules' --exclude='.git' --exclude='.claude' YOUR_FRONTEND_REPO_PATH/ YOUR_MONOREPO_PATH/customer-portal/`. Then: `cd YOUR_MONOREPO_PATH && ./test-env/test-env.sh sync`. Verify with `./test-env/test-env.sh status`.
-   - Only Senior Approve, no Docs -> skip (Docs will pick it up).
+   - Only Senior Approve, no QA -> skip (QA will pick it up). Docs is dormant and is NOT a gate.
    - **Never auto-merge PRs targeting `main`.**
 7. **Mega PR feedback (#3 job -- CTO's comments)**:
    a. Check mega PR (`YOUR_DEV_BRANCH` -> `main`) for new comments from your CTO: `gh api repos/{owner}/{repo}/issues/{num}/comments`.

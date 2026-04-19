@@ -21,7 +21,7 @@ Set Risk Level on Notion task. >500 lines -> break into sub-tasks first.
 ## Each tick
 
 1. Query Notion via **My Current Sprint view** (`YOUR_CURRENT_SPRINT_VIEW_ID`). Filter `Status === "To-do"`, sort by priority order. This view already filters by `Sprint = "Current Sprint"`.
-2. Skip tasks not owned by you or unassigned. Skip blocked tasks.
+2. Skip tasks not owned by you or unassigned. Skip blocked tasks. **Skip any task tagged `Requires: Me`** -- those belong in `prep session`, not AFK work. See `loop-afk-vs-live.md`.
 3. **All tasks get worked** -- no skipping by risk level. For High Risk: include robust test plan (unit + integration + manual QA steps + rollback). For Auth/Agent infra: open PR but hold for CTO's approval before merge.
 4. Prefer tasks with `Planned === true` -- follow the plan comment directly.
 5. Update Notion -> "In progress". Classify risk if not set.
@@ -29,7 +29,23 @@ Set Risk Level on Notion task. >500 lines -> break into sub-tasks first.
 7. Open PR targeting `YOUR_DEV_BRANCH`: `gh pr create --base YOUR_DEV_BRANCH`. Use Reviewer-First format.
 8. Move Notion -> "In Review". Pick next task.
 
-**Screenshots are NOT the Sprint Worker's job** -- the Docs agent handles that.
+**Playwright is QA's job, not yours.** Do NOT open the MCP browser in Sprint Worker cycles. The MCP chrome instance is a single shared resource across the swarm, and the QA loop (`~/.claude/rules/loop-qa.md`) is its exclusive owner. If Sprint Worker also grabs it, concurrent ticks collide and both fail.
+
+What Sprint Worker is responsible for on UX tasks:
+1. Implement + `npm run test:run` must pass
+2. Write concrete, numbered "How to test" steps in the PR body -- the QA loop reads these and executes them against the test env
+3. Call out any specific data state or account needed ("log in as admin", "have at least one `trialing` contact", etc.)
+4. List edge cases you did NOT cover -- QA expands the adversarial pass from that list
+5. Mark Notion Status='In Review'
+
+That's it. No rsync, no `test-env.sh sync`, no screenshots, no browser navigation. If a layout regression slips through, the QA loop catches it before auto-merge and files a `REQUEST_CHANGES` with repro steps. That is the whole point of QA existing.
+
+Edge cases where Sprint Worker DOES need the test env:
+- Investigating a failing test that only reproduces against real data -- read-only inspection, no browser.
+- Debugging a reported bug that needs server logs -- use `loop-log-watcher` output or SSH into the test env directly.
+In both cases, do not open the Playwright MCP browser.
+
+**Mid-work escalation**: If you start a task and discover it needs credentials, taste calls, or a live account you don't have (e.g., "I need an API key", "there are 3 valid design choices"), STOP. Re-tag the task `Requires: Me` + the right session subtag (see `loop-afk-vs-live.md`), add a comment explaining what's blocking, and move on. Do not open a half-done PR.
 
 ## Investigate Tasks
 

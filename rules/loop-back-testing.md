@@ -11,6 +11,21 @@
 ## What this fixes (after)
 [1-2 sentences]
 
+## How to test
+1. Go to [specific route/page]
+2. [Specific action -- click, type, navigate]
+3. **Expected**: [What you should see]
+4. [Next step]
+5. **Expected**: [What you should see]
+
+[Use specific routes like /agent, /settings, /admin/users]
+[For admin features: "Log in as admin (admin@example.com)"]
+[For UI changes: describe the exact visual change]
+[For behavioral changes: describe before vs after]
+
+## Edge cases to check
+- [One thing automated tests didn't cover]
+
 ## Test Evidence
 - Unit tests: X passed, 0 failed
 - Tested as: [accounts]

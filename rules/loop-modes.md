@@ -3,7 +3,7 @@
 ## Pipeline
 
 ```
-"prep sprint" -> You approve -> "launch swarm" -> Sprint Worker -> PR -> Senior Reviewer -> Docs -> Watchdog merges -> YOUR_DEV_BRANCH -> [Sprint Complete] -> Manual QA -> Mega PR -> CTO merges to main
+"prep sprint" -> You approve -> "launch swarm" -> Sprint Worker -> PR -> Senior Reviewer -> Docs -> Watchdog merges -> YOUR_DEV_BRANCH -> [Sprint Complete] -> "prep for review" -> Draft mega PR -> You comment fix/revert -> "batch fix" -> Swarm fixes -> You merge to main
 ```
 
 ## Current Sprint Curation
@@ -18,6 +18,12 @@
 5. **Never set Current Sprint without explicit approval** -- Claude suggests, you decide
 6. Between sessions: clear Done tasks from Current Sprint before curating new ones
 
+## Launch mode: local loops
+
+The swarm runs as **local `/loop` commands** in separate Claude Code terminals. Cloud triggers were evaluated and rejected on 2026-04-05 (API 500'd on manual run; disabled trigger `trig_01JvF6rHqYyuHbukMM3NXpvy` left in place for reference).
+
+**Trade-off accepted**: laptop must stay awake for the loops to run. In exchange you get Playwright, AWS/S3 creds, test env SSH, Payload secret, local file access, and 10-30m cadence instead of 1h.
+
 ## Agents
 
 | Keyword | Interval | File | Role |
@@ -26,8 +32,26 @@
 | `plan tasks` | 15m | `loop-support.md` | Implementation plans (Current Sprint only) |
 | `review prs` | 20m | `loop-pr-ops.md` | Deep code review -> Approve |
 | `watch prs` | 10m | `loop-pr-ops.md` | Fix comments, auto-merge after both gates |
-| `docs` | 20m | `loop-docs.md` | Screenshots + blog -> Documented |
+| `qa tests` | 20m | `loop-qa.md` | Real smoke test on test env -> QA Pass (the gate) |
+| `audit` | nightly | `loop-auditor.md` | Codebase audit + external CC-repo scan -> Notion report + Top 5 tasks |
 | `watch logs` | 1m | `loop-log-watcher.md` | Tail test env logs, report errors |
+| `swarm metrics` | on-demand | `swarm-metrics.md` | Diagnose throughput / quality / loop health from `~/.swarm/swarm-log.jsonl` |
+| `docs` (dormant) | — | `loop-docs.md` | Blog drafts + screenshots. Not in `launch swarm`. Fire manually with `docs` keyword if needed. |
+
+## How to actually launch
+
+Each loop needs its own Claude Code session. Open a new terminal per agent and run:
+
+```
+cd YOUR_PROJECT_ROOT
+claude
+# inside the session:
+/loop 30m sprint worker
+```
+
+Then repeat in separate terminals for `watch prs`, `review prs`, `plan tasks`, `docs` at the intervals above.
+
+**Minimal swarm** (if you only want 2 terminals open): `sprint worker` + `watch prs`. These 2 are the core throughput pipeline. Add `review prs` as a 3rd if you want the quality gate running.
 
 ## Combos
 
@@ -35,58 +59,46 @@
 |---------|--------|
 | `work horses` | Sprint Worker + PR Watchdog |
 | `senior leadership` | Task Planner + Senior Reviewer |
-| `ship it` | Docs agent |
-| `launch swarm` | All (requires Current Sprint to be curated first) |
+| `ship it` | QA agent |
+| `launch swarm` | Sprint Worker + PR Watchdog + Senior Reviewer + Task Planner + QA (Docs is dormant, fire separately if ever needed) |
 
 ## Gates
 
 Two gates before auto-merge to `YOUR_DEV_BRANCH`:
 1. **Senior Reviewer Approve** -- code is correct
-2. **Docs Documented** -- screenshots + blog draft (for `feat:`)
+2. **QA Pass** -- real smoke test on the test env verified end-state behavior (see `loop-qa.md`)
 
-## Sprint Complete -- Manual QA Handoff
+Docs (blog drafts + screenshots) is dormant. Fire manually with `docs` keyword only when you want a blog draft; it is NOT a merge gate.
 
-**Trigger**: When the swarm enters idle state -- Sprint Worker has no To-do tasks, all agents report idle on consecutive ticks. Do NOT wait for you to ask. Present the QA handoff **immediately** on the first idle cycle after work was done.
+## Sprint Complete -- Review Handoff
+
+**Trigger**: When the swarm enters idle state -- Sprint Worker has no To-do tasks, all agents report idle on consecutive ticks. Do NOT wait for you to ask. Present the review handoff **immediately** on the first idle cycle after work was done.
 
 **Steps** (execute automatically, no human prompt needed):
 
-1. **Ensure test env is running**: `cd YOUR_PROJECT_ROOT && ./test-env/test-env.sh status`. If not running, deploy it. Verify latest `YOUR_DEV_BRANCH` is deployed.
-2. **Open test env in browser**: Use Playwright to navigate to `http://<test-env-IP>:YOUR_PORT`
-3. **Present a structured testing plan** covering EVERY task shipped this sprint. Format:
+1. Stop all idle cron jobs.
+2. Present sprint summary: tasks shipped, PRs merged, test count.
+3. Prompt: "Say **prep for review** to open the draft mega PR for your review."
 
-```markdown
-## Manual QA Testing Plan -- Sprint [date]
+**Do NOT auto-proceed to mega PR** -- human review is required first.
+**Do NOT keep looping idle agents** -- once review handoff is presented, stop all cron ticks until you respond.
 
-### Summary
-[X tasks shipped, Y PRs merged. Brief description of what changed.]
+The full review flow is in `rules/loop-review.md`:
+- **"prep for review"** -> draft mega PR with review table
+- **"batch fix"** -> process your fix/revert comments
+- **"ship clean"** -> ship what's ready, hold the rest
 
----
+## No background polling in subagents
 
-### Test 1: [Task name]
-**Why this was done**: [1-2 sentences on the problem/motivation]
-**What changed**: [Brief description]
+Subagents MUST NOT use `Bash(run_in_background=true)` followed by `until ... do sleep; done` polling loops. These become zombie processes when the subagent exits — nobody kills them. Instead:
+- Run `test-env.sh sync`, `rsync`, `npm install` **synchronously** with `timeout 300` prefix
+- If the operation is truly too slow, use the `Monitor` tool (auto-cleans up) instead of hand-rolled polling
 
-**As admin** (`admin@example.com` / `adminpassword`):
-1. [Step-by-step instructions]
-2. [What you should see]
+This rule was added 2026-04-17 after finding 50+ zombie polling loops from subagents that spawned background bash tasks for test-env sync monitoring.
 
-**As basic user** (`user@example.com` / `userpassword`):
-1. [Step-by-step instructions]
-2. [What you should see / should NOT see]
+## Metric log contract
 
-**Pass criteria**: [What confirms it works]
-
----
-[Repeat for each task]
-
-### Edge Cases to Spot-Check
-- [List anything the automated tests couldn't cover]
-```
-
-4. **Wait for your feedback** -- fix any issues reported, then proceed to "prep mega pr" when approved.
-
-**Do NOT auto-proceed to mega PR** -- manual QA approval is required first.
-**Do NOT keep looping idle agents** -- once QA handoff is presented, stop all cron ticks until you respond.
+Every loop MUST append one JSONL line to `~/.swarm/swarm-log.jsonl` on every tick. Contract + canonical loop names + action verbs live in `swarm-metrics.md`. This is how `swarm metrics` diagnoses the swarm. A loop that does not log is invisible to the metric, so silent loops get blamed for problems they did not cause. No exceptions.
 
 ## Priority Order
 
